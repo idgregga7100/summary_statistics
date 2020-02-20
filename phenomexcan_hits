@@ -1,5 +1,15 @@
 #trying to get significant PhenomeXcan hits, replicate Elyse's results with PhenomeXcan traits
-#figured out how to do it better!
+
+#ex: ENSG00000180644 again
+
+pvalues<-read.table("smultixcan-mashr-pvalues.tsv",header=TRUE,sep="\t")
+prf1<-pvalues%>%filter(gene_name=="ENSG00000180644")
+prf1_sorted<-prf1[2:4092]%>%gather(key="trait",value="pvalue")%>%arrange(pvalue)
+
+#cutting out column 1 removes the gene name, so all values are read as values and not characters
+#now all scientific notation read *correctly*
+
+
 
 #ex: JAZF1, ENSG00000153814
 

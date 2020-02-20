@@ -3,7 +3,7 @@
 
 #ex: JAZF1, ENSG00000153814
 
-pvalues<-read.table("smultixcan-mashr-pvalues.tsv",header=TRUE,sep="\t"
+pvalues<-read.table("smultixcan-mashr-pvalues.tsv",header=TRUE,sep="\t")
 jazf1<-pvalues%>%filter(gene_name=="ENSG00000153814")%>%gather(key="trait",value="pvalue")%>%arrange(pvalue)
 
 #verticle 2-column table, traits in one column and p-values in the other

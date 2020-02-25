@@ -4,10 +4,11 @@
 
 pvalues<-read.table("smultixcan-mashr-pvalues.tsv",header=TRUE,sep="\t")
 prf1<-pvalues%>%filter(gene_name=="ENSG00000180644")
-prf1_sorted<-prf1[2:4092]%>%gather(key="trait",value="pvalue")%>%arrange(pvalue)
+prf1_sorted<-prf1[2:4092]%>%gather(key="trait",value="pvalue")%>%arrange(pvalue)%>%write.table(file="PRF1_pvalues.csv",row.names=FALSE,quote=FALSE,sep=",")
 
 #cutting out column 1 removes the gene name, so all values are read as values and not characters
 #now all scientific notation read *correctly*
+#extra arguments for write.table so it produces the right format of file
 
 
 

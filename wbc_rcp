@@ -1,0 +1,5 @@
+#create white blood cell fastenloc rcp file in R:
+
+rcp<-read.table("fastenloc-torus-rcp.tsv.gz",header=TRUE,sep="\t")
+wbccolumns<-grep("White_blood_cell",names(rcp),value=TRUE)
+rcpwbc<-rcp%>%select(gene_name,wbccolumns)%>%arrange(X30000_raw.White_blood_cell_leukocyte_count)%>%write.table(file="WBC_rcp.csv",row.names=FALSE,quote=FALSE,sep=",")

@@ -1,0 +1,28 @@
+#/home/isabelle/summary_stats/phenomexcan_files/scripts/search_phenomexcan_pvalues_by_gene_better.R
+
+library(dplyr)
+library(tidyr)
+pvalues<-read.table("/home/isabelle/summary_stats/phenomexcan_files/smultixcan-mashr-pvalues.tsv.gz",header=TRUE,sep="\t",stringsAsFactors=FALSE)
+#adding stringsAsFactors should allow it to sort correctly with the gene name in the column
+#it doesn't help, will try isolating to sort without the "gene_name / ENSGXXXXXXXXXXX" entries?
+
+pvalues<-pvalues%>%filter_at(vars(!starts_with("gene_name")), any_vars(. < 0.05))
+#removes all genes that don't have significant associations
+
+goi<-readLines("/home/isabelle/summary_stats/wojcik/sig_genes_all_pheno_names.txt")
+#can probably be any file type? as long as each line containts one gene name, format ENSGXXXXXXXXXXX
+#could probably also just grab the column of gene names from a file
+
+genes<-pvalues%>%filter(gene_name%in%goi)
+#column 1 is gene_names, all following column names are traits; need to individually sort and filter each gene (row) of interest
+
+result<-data.frame(matrix(nrow=(ncol(pvalues))))
+gene<-data.frame()
+
+for (row in 1:nrow(genes)) {
+  gene<-genes%>%slice(row)%>%gather(key="trait",value="pvalue")%>%arrange(pvalue)
+ result<-cbind(result,gene)
+}
+
+#will have an empty first column pls excuse that; each gene has a pair of columns
+write.table(result,file="sig_genes_all_pheno_phenomexcan_pvalues.txt",quote=FALSE,col.names=TRUE)

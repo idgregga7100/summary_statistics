@@ -1,7 +1,8 @@
 #trying to get significant PhenomeXcan hits, replicate Elyse's results with PhenomeXcan traits
 /home/isabelle/summary_stats/phenomexcan_files/smultixcan-mashr-pvalues.tsv
+/home/isabelle/summary_stats/phenomexcan_files/fastenloc-torus-rcp.tsv.gz
 
-#ex: ENSG00000180644 again, in R:
+#ex: ENSG00000180644, in R:
 
 pvalues<-read.table("smultixcan-mashr-pvalues.tsv",header=TRUE,sep="\t")
 prf1<-pvalues%>%filter(gene_name=="ENSG00000180644")

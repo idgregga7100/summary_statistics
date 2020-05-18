@@ -1,0 +1,42 @@
+#/home/isabelle/summary_stats/wojcik/sig_genes_all_pheno_names.txt
+#/home/isabelle/summary_stats/phenomexcan_files/fastenloc-torus-rcp.tsv.gz
+
+library(dplyr)
+library(tidyr)
+
+rcp<-read.table("/home/isabelle/summary_stats/phenomexcan_files/fastenloc-torus-rcp.tsv.gz",header=TRUE,sep="\t",stringsAsFactors=FALSE)
+rcp<-rcp%>%filter_at(vars(!starts_with("gene_name")), any_vars(. > 0.5))
+#filters out genes with no significance
+
+goi<-readLines("/home/isabelle/summary_stats/wojcik/sig_genes_all_pheno_names.txt")
+genes<-rcp%>%filter(gene_name%in%goi)
+
+genenames<-genes[1]
+genes<-genes[2:ncol(genes)]
+#saves gene names to create key, allows sorting to work properly by removing strings from the data
+
+result<-data.frame(matrix(nrow=(ncol(genes))))
+gene<-data.frame()
+
+for (row in 1:nrow(genes)) {
+  gene<-genes%>%slice(row)%>%gather(key="trait",value="rcp_value")%>%arrange(desc(rcp_value))
+  result<-cbind(result,gene)
+}
+
+result<-result[2:ncol(result)]
+#data frame of each gene of interest's value with associated trait, two columns per gene, without gene names
+
+label<-data.frame(matrix(nrow=(ncol(genenames))))
+name<-data.frame()
+
+for (row in 1:nrow(genenames)) {
+  name<-genenames%>%slice(row)%>%gather(key="trait",value="rcp_value")
+  label<-cbind(label,name)
+}
+
+label<-label[2:ncol(label)]
+#creates the key of gene names to go with the data, the order of gene names and the order of data weren't shuffled up so they still match up
+
+result<-rbind(label,result)
+
+write.table(result,file="sig_genes_all_pheno_phenomexcan_rcp.txt",quote=FALSE,col.names=TRUE)

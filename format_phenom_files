@@ -1,0 +1,49 @@
+#to remake the results files into better format
+#/home/isabelle/summary_stats/sig_genes/reformat_phenomexcan_results.R
+library(dplyr)
+library(tidyr)
+result<-read.table("sig_genes_all_pheno_phenomexcan_rcp_updated.txt")
+#need to save gene names label:
+label<-result[1,]
+#remove label so Row 1 starts with DATA not gene name:
+result<-result[2:nrow(result),]
+
+genenames<-label[seq(2,ncol(label),2)] 
+#every other column=gene names only
+
+gene_name<-rep(genenames[1,1],times=nrow(result))
+gene_name<-data.frame(gene_name)
+labelvert<-gene_name
+
+for (col in 2:ncol(genenames)) {
+  gene_name<-rep(genenames[1,col],times=nrow(result))
+  gene_name<-data.frame(gene_name)
+  labelvert<-rbind(labelvert,gene_name)
+}
+#now we have a column of all the gene names, need to move result columns vertically
+
+trait<-result[,1]
+traitvert<-data.frame(trait)
+
+for (col in seq(3, ncol(result), 2)) {
+  trait<-result[,col]
+  trait<-data.frame(trait)
+  traitvert<-rbind(traitvert,trait)
+}
+
+value<-result[,2]
+valuevert<-value%>%data.frame(stringsAsFactors=FALSE)%>%lapply(as.character)%>%lapply(as.numeric)%>%data.frame
+
+for (col in seq(4,ncol(result),2)) {
+  value<-result[,col]
+  value<-value%>%data.frame(stringsAsFactors=FALSE)%>%lapply(as.character)%>%lapply(as.numeric)%>%data.frame
+  valuevert<-rbind(valuevert,value)
+}
+
+#fix the column name, filter for significance
+names(valuevert)<-"rcp"
+resultvert<-cbind(traitvert,valuevert)
+resultvert<-cbind(labelvert,resultvert)
+filtered<-resultvert%>%filter(rcp>=0.5)
+
+write.table(filtered,file="sig_genes_all_pheno_phenom_rcp.txt")
